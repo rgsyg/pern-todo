@@ -7,6 +7,8 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export default function ListTodo() {
   const [todos, setTodos] = useState([]);
   const [description, setDescription] = useState("");
@@ -15,7 +17,7 @@ export default function ListTodo() {
 
   async function getAllTodo() {
     try {
-      const response = await fetch("http://localhost:5000/todos");
+      const response = await fetch(API_BASE_URL);
       const jsonData = await response.json();
       setTodos(jsonData);
     } catch (error) {
@@ -29,7 +31,7 @@ export default function ListTodo() {
         return;
       }
       const body = { description };
-      const response = await fetch(`http://localhost:5000/todos/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -45,7 +47,7 @@ export default function ListTodo() {
 
   async function deleteTodo(id) {
     try {
-      await fetch(`http://localhost:5000/todos/${id}`, {
+      await fetch(`${API_BASE_URL}/${id}`, {
         method: "DELETE",
       });
     } catch (error) {

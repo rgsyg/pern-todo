@@ -1,6 +1,8 @@
 import { Button, TextField } from "@mui/material";
 import { useState } from "react";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export default function InputTodo() {
   const [description, setDescription] = useState("");
 
@@ -8,7 +10,7 @@ export default function InputTodo() {
     e.preventDefault();
     try {
       const body = { description };
-      const response = await fetch("http://localhost:5000/todos", {
+      const response = await fetch(API_BASE_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),

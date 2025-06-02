@@ -1,5 +1,7 @@
 const express = require("express");
 const app = express();
+
+require("dotenv").config();
 const cors = require("cors");
 const pool = require("./db");
 
@@ -69,5 +71,5 @@ app.delete("/todos/:id", async (req, res) => {
 });
 
 app.listen(5000, () => {
-  console.log("Server has started on http://localhost:5000");
+  console.log("Server is running on port 5000");
 });

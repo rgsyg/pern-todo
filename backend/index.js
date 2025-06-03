@@ -70,6 +70,6 @@ app.delete("/todos/:id", async (req, res) => {
   res.json("Successfully deleted: " + deleteTodo.rows[0]["description"]);
 });
 
-app.listen(5000, () => {
+app.listen(process.env.PORT, () => {
   console.log("Server is running on port 5000");
 });

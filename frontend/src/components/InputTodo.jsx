@@ -1,24 +1,8 @@
 import { Button, TextField } from "@mui/material";
-import { useState } from "react";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { useTodoStore } from "../stores/useTodoStore";
 
 export default function InputTodo() {
-  const [description, setDescription] = useState("");
-
-  async function onSubmitForm(e) {
-    e.preventDefault();
-    try {
-      const body = { description };
-      const response = await fetch(API_BASE_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-    } catch (error) {
-      console.error(error.message);
-    }
-  }
+  const { createTodo, formData, setFormData } = useTodoStore();
 
   return (
     <>
@@ -26,15 +10,17 @@ export default function InputTodo() {
       <form
         method="post"
         className="flex items-center mt-12 gap-4"
-        onSubmit={onSubmitForm}
+        onSubmit={createTodo}
       >
         <TextField
           id="standard-basic"
           label="Add to-do"
           variant="outlined"
           className="flex-auto"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          value={formData.description}
+          onChange={(e) =>
+            setFormData({ ...formData, description: e.target.value })
+          }
         />
         <Button variant="contained" type="submit">
           Add

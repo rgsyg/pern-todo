@@ -1,12 +1,21 @@
 const express = require("express");
-const app = express();
 
 require("dotenv").config();
+
+const app = express();
 const cors = require("cors");
 const pool = require("./db");
+const morgan = require("morgan")
+const helmet = require("helmet")
+const path = require("path")
 
 app.use(cors());
 app.use(express.json());
+app.use(morgan("dev"))
+app.use(helmet())
+
+const PORT = process.env.PORT || 3000
+__dirname = path.resolve()
 
 //create a todo
 app.post("/todos", async (req, res) => {
@@ -70,6 +79,14 @@ app.delete("/todos/:id", async (req, res) => {
   res.json("Successfully deleted: " + deleteTodo.rows[0]["description"]);
 });
 
-app.listen(process.env.PORT, () => {
-  console.log("Server is running on port 5000");
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "/frontend/dist")))
+
+  app.get("/{*any}", (req, res) => { // "*" causes error
+    res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"))
+  })
+}
+
+app.listen(PORT, () => {
+  console.log("Server is running on port", PORT);
 });

@@ -5,68 +5,25 @@ import {
   Button,
   Snackbar,
 } from "@mui/material";
-import { useEffect, useState } from "react";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { useTodoStore } from "../stores/useTodoStore";
+import { useEffect } from "react";
 
 export default function ListTodo() {
-  const [todos, setTodos] = useState([]);
-  const [description, setDescription] = useState("");
-  const [edit, setEdit] = useState(false);
-  const [open, setOpen] = useState(false);
-
-  async function getAllTodo() {
-    try {
-      const response = await fetch(API_BASE_URL);
-      const jsonData = await response.json();
-      setTodos(jsonData);
-    } catch (error) {
-      console.error(error.message);
-    }
-  }
-
-  async function editTodo(id) {
-    try {
-      if (edit === false) {
-        return;
-      }
-      const body = { description };
-      const response = await fetch(`${API_BASE_URL}/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
-      setEdit(false);
-      setOpen(true);
-    } catch (error) {
-      console.error(error.message);
-    }
-  }
-
-  async function deleteTodo(id) {
-    try {
-      await fetch(`${API_BASE_URL}/${id}`, {
-        method: "DELETE",
-      });
-    } catch (error) {
-      console.error(error.message);
-    }
-  }
-
-  function handleEdit(e) {
-    setDescription(e.target.textContent);
-    setEdit(true);
-  }
-
-  function handleClose() {
-    setOpen(false);
-  }
+  const {
+    todos,
+    currentTodo,
+    fetchTodos,
+    updateTodo,
+    deleteTodo,
+    edit,
+    makeEditable,
+    openModal,
+    setOpenModal,
+  } = useTodoStore();
 
   useEffect(() => {
-    getAllTodo();
-  }, [todos]);
+    fetchTodos();
+  }, [fetchTodos]);
 
   return (
     <div className="flex gap-4 flex-wrap mt-8">
@@ -76,38 +33,57 @@ export default function ListTodo() {
           className="flex-1/5 justify-between flex flex-col"
         >
           <CardContent>
-            <p
-              contentEditable
-              onInput={handleEdit}
-              suppressContentEditableWarning
-            >
-              {todo.description}
-            </p>
+            <p id={`todo${todo.todo_id}`}>{todo.description}</p>
           </CardContent>
-          <CardActions className="mb-2">
-            <Button
-              size="small"
-              color="primary"
-              variant="contained"
-              onClick={() => editTodo(todo.todo_id)}
-            >
-              Edit
-            </Button>
-            <Button
-              size="small"
-              color="warning"
-              variant="contained"
-              onClick={() => deleteTodo(todo.todo_id)}
-            >
-              Delete
-            </Button>
-          </CardActions>
+          {edit && todo.todo_id === currentTodo ? (
+            <CardActions className="mb-2">
+              <Button
+                size="small"
+                color="primary"
+                variant="contained"
+                onClick={() => {
+                  updateTodo(todo.todo_id);
+                  makeEditable(todo.todo_id, false);
+                }}
+              >
+                Update
+              </Button>
+              <Button
+                size="small"
+                color="warning"
+                variant="contained"
+                onClick={() => makeEditable(todo.todo_id, false)}
+              >
+                Cancel
+              </Button>
+            </CardActions>
+          ) : (
+            <CardActions className="mb-2">
+              <Button
+                size="small"
+                color="primary"
+                variant="contained"
+                onClick={() => makeEditable(todo.todo_id, true)}
+              >
+                Edit
+              </Button>
+              <Button
+                size="small"
+                color="warning"
+                variant="contained"
+                onClick={() => deleteTodo(todo.todo_id)}
+              >
+                Delete
+              </Button>
+            </CardActions>
+          )}
         </Card>
       ))}
       <Snackbar
-        open={open}
+        id="update_modal"
         autoHideDuration={6000}
-        onClose={handleClose}
+        open={openModal}
+        onClose={() => setOpenModal(false)}
         message="Successfully edited!"
       />
     </div>

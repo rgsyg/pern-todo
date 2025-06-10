@@ -1,10 +1,16 @@
-const Pool = require("pg").Pool;
+require('dotenv').config()
+const Pool = require("pg").Pool
+
+const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-
+  host: PGHOST,
+  database: PGDATABASE,
+  username: PGUSER,
+  password: PGPASSWORD,
+  port: 5432,
   ssl: {
-    rejectUnauthorized: false,
+    require: true,
   },
 });
 

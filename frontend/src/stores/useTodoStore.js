@@ -8,6 +8,8 @@ export const useTodoStore = create((set, get) => ({
     edit: false,
     formData: { description: "" },
     setFormData: (formData) => set({ formData: formData }),
+    resetForm: () => set({ formData: { description: "" } }),
+
     currentTodo: "",
     openModal: false,
     setOpenModal: (openModal) => set({ openModal }),
@@ -34,6 +36,7 @@ export const useTodoStore = create((set, get) => ({
                 body: JSON.stringify(formData)
             })
             get().fetchTodos()
+            get().resetForm()
         } catch (error) {
             console.error(error.messsage)
         }
